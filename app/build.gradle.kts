@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.a4cut_box"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.a4cut_box"
