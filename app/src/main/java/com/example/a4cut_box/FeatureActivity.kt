@@ -1,5 +1,6 @@
 package com.example.a4cut_box
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,8 @@ import com.example.a4cut_box.ui.theme._4CutBoxTheme
 class FeatureActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val context = this@FeatureActivity
+
         setContent {
             val navController = rememberNavController()
 
@@ -31,7 +34,12 @@ class FeatureActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomBar()
+                        BottomBar(
+                            onClickSetting = {
+                                navController.navigateUp()
+                                navController.navigate("setting")
+                            }
+                        )
                     }
                 ) { innerPadding ->
                     NavHost(
@@ -58,7 +66,12 @@ class FeatureActivity : ComponentActivity() {
                             MapPage()
                         }
                         composable("setting") {
-                            SettingPage()
+                            SettingPage(
+                                goToMainActivity = {
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    context.startActivity(intent)
+                                }
+                            )
                         }
                     }
                 }
