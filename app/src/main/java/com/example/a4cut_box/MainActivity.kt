@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,18 +37,47 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            var isSignIn by remember { mutableStateOf(false) }
 
             _4CutBoxTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        BottomBar()
+                if (!isSignIn) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize()
+                    ) { innerPadding ->
+                        NavHost(
+                            modifier = Modifier.padding(innerPadding),
+                            navController = navController,
+                            startDestination = "SignIn"
+                        ) {
+                            composable("SignIn") {
+                                SignInPage(
+                                    onClickSignUp = { navController.navigate("SignUp") },
+                                    onClickTmp = {
+                                        isSignIn = true
+                                        navController.navigate("Home") {
+                                            popUpTo("SignIn") {
+                                                inclusive = true
+                                            } // SignIn을 제거하고 Home으로 이동
+                                        }
+                                    })
+                            }
+                            composable("SignUp") {
+                                SignUpPage(onClickBack = { navController.navigateUp() })
+                            }
+                        }
                     }
-                ) { innerPadding ->
-                    NavHostBody(
-                        innerPadding = innerPadding,
-                        navController = navController
-                    )
+                } else {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        bottomBar = {
+                            BottomBar()
+                        }
+                    ) { innerPadding ->
+                        NavHostBody(
+                            innerPadding = innerPadding,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
@@ -54,16 +87,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHostBody(innerPadding: PaddingValues, navController: NavHostController) {
     NavHost(
+        modifier = Modifier.padding(innerPadding),
         navController = navController,
-        startDestination = "SignIn",
-        modifier = Modifier.padding(innerPadding)
+        startDestination = "Home"
     ) {
-        composable("SignIn") {
-            SignInPage(onClickSignUp = { navController.navigate("SignUp") })
-        }
-        composable("SignUp") {
-            SignUpPage(onClickBack = { navController.navigateUp() })
-        }
         composable("Home") {
             HomePage()
         }
@@ -84,9 +111,6 @@ fun NavHostBody(innerPadding: PaddingValues, navController: NavHostController) {
         }
         composable("setting") {
             SettingPage()
-        }
-        composable("map") {
-            MapPage()
         }
     }
 }
