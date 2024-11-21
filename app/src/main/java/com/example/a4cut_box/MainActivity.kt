@@ -59,10 +59,10 @@ fun NavHostBody(innerPadding: PaddingValues, navController: NavHostController) {
         modifier = Modifier.padding(innerPadding)
     ) {
         composable("SignIn") {
-            SignInPage()
+            SignInPage(onClickSignUp = { navController.navigate("SignUp") })
         }
         composable("SignUp") {
-            SignUpPage()
+            SignUpPage(onClickBack = { navController.navigateUp() })
         }
         composable("Home") {
             HomePage()
