@@ -15,11 +15,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.a4cut_box.auth.SignInPage
 import com.example.a4cut_box.auth.SignUpPage
 import com.example.a4cut_box.ui.theme._4CutBoxTheme
+import com.google.firebase.FirebaseApp
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -37,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         composable("SignIn") {
                             SignInPage(
                                 onClickSignUp = { navController.navigate("SignUp") },
-                                onClickTmp = {
+                                goToFeatureActivity = {
                                     val intent = Intent(context, FeatureActivity::class.java)
                                     context.startActivity(intent)
                                 })
