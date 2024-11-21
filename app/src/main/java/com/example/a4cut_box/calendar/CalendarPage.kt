@@ -6,5 +6,5 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun CalendarPage(modifier: Modifier = Modifier) {
-    Text("hello world")
+    Text("hello CalendarPage")
 }

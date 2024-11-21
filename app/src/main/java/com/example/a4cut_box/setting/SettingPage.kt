@@ -6,5 +6,5 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SettingPage(modifier: Modifier = Modifier) {
-    Text("hello world")
+    Text("hello SettingPage")
 }

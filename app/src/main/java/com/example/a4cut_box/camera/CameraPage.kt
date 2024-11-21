@@ -6,5 +6,5 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun CameraPage(modifier: Modifier = Modifier) {
-    Text("hello world")
+    Text("hello CameraPage")
 }
