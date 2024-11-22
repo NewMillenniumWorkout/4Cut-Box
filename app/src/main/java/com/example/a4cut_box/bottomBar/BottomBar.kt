@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun BottomBar() {
+fun BottomBar(
+    onClickSetting: () -> Unit
+) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.primary,
@@ -45,6 +48,13 @@ fun BottomBar() {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Info",
+                        tint = Color.Black
+                    )
+                }
+                IconButton(onClick = onClickSetting) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
                         tint = Color.Black
                     )
                 }
