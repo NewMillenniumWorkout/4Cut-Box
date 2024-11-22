@@ -35,10 +35,26 @@ class FeatureActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         BottomBar(
+                            onClickHome = {
+                                navController.navigateUp()
+                                navController.navigate("home")
+                            },
+                            onClickCalendar = {
+                                navController.navigateUp()
+                                navController.navigate("calendar")
+                            },
+                            onClickCamera = {
+                                navController.navigateUp()
+                                navController.navigate("camera")
+                            },
+                            onClickMap = {
+                                navController.navigateUp()
+                                navController.navigate("map")
+                            },
                             onClickSetting = {
                                 navController.navigateUp()
                                 navController.navigate("setting")
-                            }
+                            },
                         )
                     }
                 ) { innerPadding ->
