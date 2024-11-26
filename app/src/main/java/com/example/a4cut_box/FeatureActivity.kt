@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
@@ -53,7 +54,8 @@ class FeatureActivity : ComponentActivity() {
                             },
                             shape = CircleShape,
                             modifier = Modifier.offset(y = 64.dp).size(64.dp),
-                            containerColor = BoxBlack
+                            containerColor = BoxBlack,
+                            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 3.dp)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.qr_code),
