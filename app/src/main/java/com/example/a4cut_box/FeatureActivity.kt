@@ -53,11 +53,12 @@ class FeatureActivity : ComponentActivity() {
                                 navController.navigate("camera")
                             },
                             shape = CircleShape,
-                            modifier = Modifier.offset(y = 64.dp).size(64.dp),
+                            modifier = Modifier.offset(y = 60.dp).size(66.dp),
                             containerColor = BoxBlack,
                             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 3.dp)
                         ) {
                             Icon(
+                                modifier = Modifier.size(36.dp),
                                 painter = painterResource(R.drawable.qr_code),
                                 contentDescription = "camera",
                                 tint = BoxWhite
