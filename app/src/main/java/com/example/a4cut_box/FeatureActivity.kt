@@ -15,6 +15,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,7 @@ class FeatureActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            var selectedButton by remember { mutableStateOf("") }
 
             _4CutBoxTheme {
                 Scaffold(
@@ -51,9 +56,12 @@ class FeatureActivity : ComponentActivity() {
                             onClick = {
                                 navController.navigateUp()
                                 navController.navigate("camera")
+                                selectedButton = "camera"
                             },
                             shape = CircleShape,
-                            modifier = Modifier.offset(y = 60.dp).size(66.dp),
+                            modifier = Modifier
+                                .offset(y = 60.dp)
+                                .size(66.dp),
                             containerColor = BoxBlack,
                             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 3.dp)
                         ) {
@@ -70,19 +78,24 @@ class FeatureActivity : ComponentActivity() {
                             onClickHome = {
                                 navController.navigateUp()
                                 navController.navigate("home")
+                                selectedButton = "home"
                             },
                             onClickCalendar = {
                                 navController.navigateUp()
                                 navController.navigate("calendar")
+                                selectedButton = "calendar"
                             },
                             onClickMap = {
                                 navController.navigateUp()
                                 navController.navigate("map")
+                                selectedButton = "map"
                             },
                             onClickSetting = {
                                 navController.navigateUp()
                                 navController.navigate("setting")
+                                selectedButton = "setting"
                             },
+                            selectedButton = selectedButton
                         )
                     }
                 ) { innerPadding ->

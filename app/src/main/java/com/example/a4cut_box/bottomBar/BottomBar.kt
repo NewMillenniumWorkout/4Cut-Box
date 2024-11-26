@@ -29,6 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -43,13 +47,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a4cut_box.R
 import com.example.a4cut_box.ui.theme.BoxBlack
+import com.example.a4cut_box.ui.theme.BoxGray
 
 @Composable
 fun BottomBar(
     onClickHome: () -> Unit,
     onClickCalendar: () -> Unit,
     onClickMap: () -> Unit,
-    onClickSetting: () -> Unit
+    onClickSetting: () -> Unit,
+    selectedButton: String
 ) {
     Box(Modifier.fillMaxWidth()) {
 
@@ -94,14 +100,14 @@ fun BottomBar(
                         icon= R.drawable.home,
                         description = "Home",
                         label = "홈",
-                        color = BoxBlack
+                        color = if (selectedButton == "home") BoxBlack else BoxGray
                     )
                     IconButtonWithLabel(
                         onClick = onClickCalendar,
                         icon= R.drawable.calendar_days,
                         description = "Calendar",
                         label = "달력",
-                        color = BoxBlack
+                        color = if (selectedButton == "calendar") BoxBlack else BoxGray
                     )
                     Spacer(modifier = Modifier.size(56.dp))
                     IconButtonWithLabel(
@@ -109,14 +115,14 @@ fun BottomBar(
                         icon= R.drawable.map,
                         description = "Map",
                         label = "지도",
-                        color = BoxBlack
+                        color = if (selectedButton == "map") BoxBlack else BoxGray
                     )
                     IconButtonWithLabel(
                         onClick = onClickSetting,
                         icon= R.drawable.settings_8,
                         description = "Setting",
                         label = "설정",
-                        color = BoxBlack
+                        color = if (selectedButton == "setting") BoxBlack else BoxGray
                     )
                 }
             }
@@ -150,6 +156,7 @@ fun IconButtonWithLabel(
             )
             Text(
                 fontSize = 12.sp,
+                color = color,
                 text = label
             )
         }
