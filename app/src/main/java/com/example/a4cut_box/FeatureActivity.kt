@@ -74,13 +74,15 @@ class FeatureActivity : ComponentActivity() {
                         }
                         composable("camera") {
                             CameraPage(goToCameraSavePage = {
-                                navController.navigate("cameraSave") {
-                                    popUpTo("camera") { inclusive = true }
-                                }
+                                navController.navigate("cameraSave")
                             })
                         }
                         composable("cameraSave") {
-                            CameraSavePage()
+                            CameraSavePage(
+                                onClickBack = {
+                                    navController.navigateUp()
+                                }
+                            )
                         }
                         composable("map") {
                             MapPage()
