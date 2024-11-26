@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.a4cut_box.R
 
 @Composable
-fun CameraPage(modifier: Modifier = Modifier) {
+fun CameraPage(modifier: Modifier = Modifier, goToCameraSavePage: (image: String) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         CameraScreen()
         Image(
@@ -25,7 +25,9 @@ fun CameraPage(modifier: Modifier = Modifier) {
                 .size(250.dp)
         )
         ElevatedButton(
-            onClick = {},
+            onClick = {
+                goToCameraSavePage("example image")
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(vertical = 32.dp)
