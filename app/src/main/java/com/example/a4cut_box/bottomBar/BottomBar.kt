@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import com.example.a4cut_box.R
+import com.example.a4cut_box.ui.theme.BoxBlack
 
 @Composable
 fun BottomBar(
@@ -37,37 +40,37 @@ fun BottomBar(
             ) {
                 IconButton(onClick = onClickHome) {
                     Icon(
-                        imageVector = Icons.Default.Home,
+                        painter = painterResource(R.drawable.home),
                         contentDescription = "Home",
-                        tint = Color.Black
+                        tint = BoxBlack
                     )
                 }
                 IconButton(onClick = onClickCalendar) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        painter = painterResource(R.drawable.calendar_days),
                         contentDescription = "Calendar",
-                        tint = Color.Black
+                        tint = BoxBlack
                     )
                 }
                 IconButton(onClick = onClickCamera) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
+                        painter = painterResource(R.drawable.qr_code),
                         contentDescription = "Camera",
-                        tint = Color.Black
+                        tint = BoxBlack
                     )
                 }
                 IconButton(onClick = onClickMap) {
                     Icon(
-                        imageVector = Icons.Default.Place,
+                        painter = painterResource(R.drawable.map),
                         contentDescription = "Map",
-                        tint = Color.Black
+                        tint = BoxBlack
                     )
                 }
                 IconButton(onClick = onClickSetting) {
                     Icon(
-                        imageVector = Icons.Default.Settings,
+                        painter = painterResource(R.drawable.settings_8),
                         contentDescription = "Setting",
-                        tint = Color.Black
+                        tint = BoxBlack
                     )
                 }
             }
