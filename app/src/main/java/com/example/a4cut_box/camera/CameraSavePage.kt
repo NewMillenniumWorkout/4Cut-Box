@@ -189,7 +189,7 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
                 Spacer(modifier = Modifier.size(8.dp))
                 Box(
                     Modifier
-                        .size(56.dp)
+                        .size(50.dp)
                         .clickable(onClick = {
                             if (!tagList.contains(tagInput)) {
                                 tagList.add(tagInput)
