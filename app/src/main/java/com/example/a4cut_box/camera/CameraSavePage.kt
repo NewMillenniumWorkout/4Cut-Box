@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +58,9 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
     val scrollState1 = rememberScrollState()
     var location by remember { mutableStateOf("동작구 상도동") }
     var memo by remember { mutableStateOf("") }
-    var tagList = remember { mutableStateListOf("김민식", "김여진", "장민석", "이훈의", "고지흔", "조성현") }
+    var tagInput by remember { mutableStateOf("") }
+    var tagList = remember { mutableStateListOf<String>() }
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -167,8 +170,8 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
             )
             {
                 OutlinedTextField(
-                    value = memo,
-                    onValueChange = { memo = it },
+                    value = tagInput,
+                    onValueChange = { tagInput = it.filterNot { char -> char.isWhitespace() } },
                     placeholder = {
                         Text(text = "테그를 입력하세요.")
                     },
@@ -187,7 +190,13 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
                 Box(
                     Modifier
                         .size(56.dp)
-                        .clickable(onClick = {})
+                        .clickable(onClick = {
+                            if (!tagList.contains(tagInput)) {
+                                tagList.add(tagInput)
+                            }
+                            tagInput = ""
+                            focusManager.clearFocus() // 입력창 포커스 제거
+                        })
                 ) {
                     Image(
                         painter = painterResource(R.drawable.tag_plus),
@@ -208,6 +217,24 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
             ) {
                 tagList.forEach { tag -> TagElement(tag) { tagList.remove(tag) } }
             }
+            Spacer(modifier = Modifier.size(52.dp))
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+                    .clickable(onClick = {})
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(BoxBlack),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "저장하기",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+            Spacer(modifier = Modifier.size(104.dp))
         }
     }
 }
@@ -222,7 +249,7 @@ fun TagElement(tagText: String, onClickX: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(text = tagText, color = Color.White, fontSize = 20.sp)
+        Text(text = tagText, color = Color.White, fontSize = 16.sp)
         Spacer(modifier = Modifier.size(2.dp))
         Box(
             modifier = Modifier
