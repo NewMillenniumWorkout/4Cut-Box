@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -49,7 +50,9 @@ class FeatureActivity : ComponentActivity() {
 
             _4CutBoxTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    containerColor = Color.White,
                     floatingActionButtonPosition = FabPosition.Center,
                     floatingActionButton = {
                         FloatingActionButton(
@@ -99,6 +102,7 @@ class FeatureActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
+                    Modifier.background(Color.White)
                     NavHost(
                         modifier = Modifier.padding(innerPadding),
                         navController = navController,
