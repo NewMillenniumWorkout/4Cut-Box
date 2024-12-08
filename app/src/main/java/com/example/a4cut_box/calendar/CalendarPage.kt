@@ -3,6 +3,7 @@ package com.example.a4cut_box.calendar
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -29,12 +31,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
+import com.example.a4cut_box.ui.theme.BoxWhite
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -64,6 +68,8 @@ fun CalendarPage(modifier: Modifier = Modifier) {
     }
 
     val calendarDates = getCalendarDates(currentMonth)
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+
 
     Column(
         modifier = Modifier
@@ -120,17 +126,42 @@ fun CalendarPage(modifier: Modifier = Modifier) {
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             items(calendarDates) { date ->
-                Box(
-                    contentAlignment = Alignment.Center,
+                Column(
                     modifier = Modifier
-                        .size(40.dp)
-                        .padding(4.dp)
-                        .background(if (date != null) Color.LightGray else Color.Transparent)
+                        .fillMaxWidth()
+                        .size(width = 48.dp, height = 96.dp)
+                        .padding(2.dp)
+                        .background(Color.Yellow)
+                        .clickable { if (date != null) selectedDate = date },
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = date?.dayOfMonth?.toString() ?: "")
+                    Box(
+                        contentAlignment = Alignment.TopCenter,
+                        modifier = Modifier
+                    ) {
+                        if (date != null) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(BoxBlack)
+                            ) {
+                                Text(
+                                    text = date.dayOfMonth.toString(),
+                                    fontSize = 14.sp,
+                                    color = BoxWhite,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+
                 }
             }
         }
