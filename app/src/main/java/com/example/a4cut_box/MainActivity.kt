@@ -12,10 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.a4cut_box.BuildConfig.KAKAO_MAP_KEY
 import com.example.a4cut_box.auth.SignInPage
 import com.example.a4cut_box.auth.SignUpPage
 import com.example.a4cut_box.ui.theme._4CutBoxTheme
 import com.google.firebase.FirebaseApp
+import com.kakao.vectormap.KakaoMapSdk
+
 
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
+        KakaoMapSdk.init(this, KAKAO_MAP_KEY)
         setContent {
             val navController = rememberNavController()
             val context = this@MainActivity
@@ -51,5 +55,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
     }
 }

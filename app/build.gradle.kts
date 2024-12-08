@@ -1,7 +1,14 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+}
+
+val properties = Properties().apply {
+    load(FileInputStream(rootProject.file("local.properties")))
 }
 
 android {
@@ -19,6 +26,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "KAKAO_MAP_KEY", properties.getProperty("KAKAO_MAP_KEY"))
+    }
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -48,6 +60,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -79,5 +92,5 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.4.0")
     implementation("com.google.accompanist:accompanist-permissions:0.33.0-alpha")
     implementation("io.coil-kt:coil-compose:2.4.0")
-
+    implementation ("com.kakao.maps.open:android:2.12.8")
 }
