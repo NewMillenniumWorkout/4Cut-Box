@@ -148,18 +148,19 @@ class FeatureActivity : ComponentActivity() {
                                 onClickSave = { navController.navigateUp() },
                                 featureViewModel = featureViewModel
                             )
-                            composable("map") {
-                                MapPage()
-                            }
-                            composable("setting") {
-                                SettingPage(
-                                    goToMainActivity = {
-                                        val intent = Intent(context, MainActivity::class.java)
-                                        context.startActivity(intent)
-                                    },
-                                    featureViewModel = featureViewModel
-                                )
-                            }
+                        }
+
+                        composable("map") {
+                            MapPage()
+                        }
+                        composable("setting") {
+                            SettingPage(
+                                goToMainActivity = {
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    context.startActivity(intent)
+                                },
+                                featureViewModel = featureViewModel
+                            )
                         }
                     }
                 }
