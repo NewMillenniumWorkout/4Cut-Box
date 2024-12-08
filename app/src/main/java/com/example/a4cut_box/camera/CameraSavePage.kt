@@ -58,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.a4cut_box.R
 import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.model.LocationViewModel
@@ -83,6 +84,7 @@ fun getRoadAddress(context: Context, latitude: Double, longitude: Double): Strin
 @Composable
 fun CameraSavePage(
     modifier: Modifier = Modifier,
+    imageUri: String,
     onClickBack: () -> Unit,
     onClickSave: () -> Unit,
     featureViewModel: FeatureViewModel
@@ -167,8 +169,13 @@ fun CameraSavePage(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            Log.d("me", imageUri)
             Image(
-                painter = painterResource(id = R.drawable.photo_example), "photo",
+                painter = rememberAsyncImagePainter(
+                    model = imageUri,
+                    placeholder = painterResource(R.drawable.loading),
+                ),
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentScale = ContentScale.FillWidth

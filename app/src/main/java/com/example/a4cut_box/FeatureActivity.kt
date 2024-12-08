@@ -1,6 +1,7 @@
 package com.example.a4cut_box
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,9 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.a4cut_box.bottomBar.BottomBar
 import com.example.a4cut_box.calendar.CalendarPage
 import com.example.a4cut_box.camera.CameraPage
@@ -127,33 +130,36 @@ class FeatureActivity : ComponentActivity() {
                             PhotoDetailPage()
                         }
                         composable("camera") {
-                            CameraPage(goToCameraSavePage = {
-                                navController.navigate("cameraSave")
+                            CameraPage(goToCameraSavePage = { imageUri ->
+                                navController.navigate("cameraSave/${Uri.encode(imageUri)}")
                             })
                         }
-                        composable("cameraSave") {
+                        composable(
+                            "cameraSave/{imageUri}",
+                            arguments = listOf(navArgument("imageUri") {
+                                type = NavType.StringType
+                            })
+                        ) { backStackEntry ->
+                            val imageUri =
+                                Uri.decode(backStackEntry.arguments?.getString("imageUri") ?: "")
                             CameraSavePage(
-                                onClickBack = {
-                                    navController.navigateUp()
-                                },
-                                featureViewModel = featureViewModel,
-                                onClickSave = {
-                                    navController.navigateUp()
-                                    navController.navigateUp()
-                                }
-                            )
-                        }
-                        composable("map") {
-                            MapPage()
-                        }
-                        composable("setting") {
-                            SettingPage(
-                                goToMainActivity = {
-                                    val intent = Intent(context, MainActivity::class.java)
-                                    context.startActivity(intent)
-                                },
+                                imageUri = imageUri,
+                                onClickBack = { navController.navigateUp() },
+                                onClickSave = { navController.navigateUp() },
                                 featureViewModel = featureViewModel
                             )
+                            composable("map") {
+                                MapPage()
+                            }
+                            composable("setting") {
+                                SettingPage(
+                                    goToMainActivity = {
+                                        val intent = Intent(context, MainActivity::class.java)
+                                        context.startActivity(intent)
+                                    },
+                                    featureViewModel = featureViewModel
+                                )
+                            }
                         }
                     }
                 }
