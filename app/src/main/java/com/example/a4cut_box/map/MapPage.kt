@@ -54,8 +54,6 @@ import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
-import java.math.RoundingMode
-
 
 @Composable
 fun MapPage(
@@ -78,7 +76,14 @@ fun MapPage(
     }
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var selectedElements by remember { mutableStateOf<List<Element>>(emptyList()) }
-    var groupedElements = remember { mutableMapOf<LatLng, List<Element>>() }
+
+    // 허용 오차 설정 (약 0.0001 정도면 대략적인 몇 미터 단위)
+    val tolerance = 0.0001
+
+    // 요소들을 클러스터링 (유사한 위치끼리 그룹화)
+    val groupedElements = remember(elements) {
+        clusterElements(elements, tolerance)
+    }
 
     LaunchedEffect(Unit) {
         if (ContextCompat.checkSelfPermission(
@@ -109,46 +114,26 @@ fun MapPage(
                 mapView.start(
                     object : MapLifeCycleCallback() {
                         override fun onMapDestroy() {
-                            TODO("Not yet implemented")
+                            // 필요한 경우 자원 정리
                         }
 
                         override fun onMapError(p0: Exception?) {
-                            TODO("Not yet implemented")
+                            // 에러 처리
+                            p0?.printStackTrace()
                         }
                     },
                     object : KakaoMapReadyCallback() {
                         override fun onMapReady(kakaoMap: KakaoMap) {
-//                            Log.d(
-//                                "MapPage",
-//                                "userLatLng: ${userLatLng.latitude}, ${userLatLng.longitude}"
-//                            )
 
                             // 지도 중심 위치 설정
                             val cameraUpdate = CameraUpdateFactory.newCenterPosition(
                                 userLatLng
                             )
-
-                            // 카메라를 지정된 위치로 이동
                             kakaoMap.moveCamera(cameraUpdate)
-                            kakaoMap.setGestureEnable(GestureType.OneFingerDoubleTap, true);
-                            kakaoMap.setGestureEnable(GestureType.TwoFingerSingleTap, true);
-                            kakaoMap.setGestureEnable(GestureType.Zoom, true);
+                            kakaoMap.setGestureEnable(GestureType.OneFingerDoubleTap, true)
+                            kakaoMap.setGestureEnable(GestureType.TwoFingerSingleTap, true)
+                            kakaoMap.setGestureEnable(GestureType.Zoom, true)
 
-                            groupedElements =
-                                elements.groupBy {
-                                    val lat =
-                                        it.latitude.toBigDecimal().setScale(5, RoundingMode.HALF_UP)
-                                            .toDouble()
-                                    val lng = it.longitude.toBigDecimal()
-                                        .setScale(5, RoundingMode.HALF_UP).toDouble()
-                                    val latLng = LatLng.from(lat, lng)
-                                    Log.d(
-                                        "MapPage",
-                                        "Grouping Element: ${it.id} at LatLng: $latLng"
-                                    )
-                                    latLng
-                                }
-                                    .toMutableMap()
                             addCustomMarkers(kakaoMap, groupedElements)
 
                             kakaoMap.setOnLabelClickListener(object :
@@ -159,21 +144,14 @@ fun MapPage(
                                     label: Label?
                                 ): Boolean {
                                     val latLng = label?.position ?: return false
-                                    Log.d("MapPage", "Clicked Label LatLng: $latLng")
-                                    selectedElements = findMatchingElements(groupedElements, latLng)
-                                    Log.d(
-                                        "MapPage",
-                                        "Selected elements count: ${selectedElements.size}"
-                                    )
-                                    selectedElements.forEach {
-                                        Log.d("MapPage", "Selected Element: ${it.imageUrl}")
-                                    }
+                                    selectedElements =
+                                        findClusterElements(groupedElements, latLng, tolerance)
                                     val centerUpdate = CameraUpdateFactory.newCenterPosition(latLng)
                                     kakaoMap?.moveCamera(centerUpdate)
                                     if (selectedElements.isNotEmpty()) {
                                         showBubble = true
                                     }
-                                    return false;
+                                    return false
                                 }
                             })
                         }
@@ -189,15 +167,13 @@ fun MapPage(
         BubbleDialog(
             navController = navController,
             elements = selectedElements
-        )
-        {
+        ) {
             showBubble = false // 말풍선 닫기
             selectedElements = emptyList()
         }
     }
 
 }
-
 
 private fun addCustomMarkers(
     kakaoMap: KakaoMap,
@@ -207,24 +183,18 @@ private fun addCustomMarkers(
         ?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.photo_label)))
 
     groupedElements.forEach { (latLng, group) ->
-        Log.d("MapPage", "Adding Label at LatLng: $latLng with ${group.size} elements")
-
-        // 라벨 생성
         val labelOptions = LabelOptions.from(latLng)
             .setStyles(styles)
 
-        // 라벨 추가
         kakaoMap.labelManager?.layer?.addLabel(labelOptions)?.let {
             Log.d("MapPage", "Label added with ID: ${it.labelId}")
         }
-
     }
 }
 
 @Composable
 fun BubbleDialog(navController: NavController, elements: List<Element>, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = { onDismiss() }) {
-        Log.d("MapPage", "BubbleDialog with ${elements.size} elements")
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(24.dp))
@@ -234,15 +204,14 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
                 .fillMaxHeight(0.6f)
         ) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2), // 2열
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(elements) { element ->
-                    Log.d("MapPage", "Rendering element image URL: ${element.imageUrl}")
                     AsyncImage(
-                        model = element.imageUrl, // URL에서 이미지 로드
+                        model = element.imageUrl,
                         contentDescription = "Element Image",
                         modifier = Modifier
                             .size(100.dp)
@@ -259,24 +228,61 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
     }
 }
 
-private fun findMatchingElements(
+/**
+ * elements를 받아서 특정 tolerance 이내에 위치한 요소들을 하나의 그룹으로 묶어주는 함수.
+ */
+private fun clusterElements(
+    elements: List<Element>,
+    tolerance: Double
+): Map<LatLng, List<Element>> {
+    val clusters = mutableListOf<MutableList<Element>>()
+
+    elements.forEach { element ->
+        val elementLatLng = LatLng.from(element.latitude, element.longitude)
+        var added = false
+
+        // 기존 클러스터에 속하는지 확인
+        for (cluster in clusters) {
+            // 클러스터 내 임의의 한 점과 비교하여 tolerance 이내면 같은 클러스터로 본다.
+            val representative = cluster.first()
+            val repLatLng = LatLng.from(representative.latitude, representative.longitude)
+            if (isWithinTolerance(repLatLng, elementLatLng, tolerance)) {
+                cluster.add(element)
+                added = true
+                break
+            }
+        }
+
+        // 어떤 클러스터에도 속하지 않으면 새로운 클러스터 생성
+        if (!added) {
+            clusters.add(mutableListOf(element))
+        }
+    }
+
+    // 각 클러스터의 대표 좌표를 평균으로 잡아서 Map<LatLng, List<Element>> 형태로 변환
+    return clusters.associate { cluster ->
+        val avgLat = cluster.map { it.latitude }.average()
+        val avgLng = cluster.map { it.longitude }.average()
+        LatLng.from(avgLat, avgLng) to cluster.toList()
+    }
+}
+
+private fun isWithinTolerance(a: LatLng, b: LatLng, tolerance: Double): Boolean {
+    return Math.abs(a.latitude - b.latitude) < tolerance && Math.abs(a.longitude - b.longitude) < tolerance
+}
+
+/**
+ * 라벨 클릭 시 해당 라벨 주변 tolerance 내에 있는 클러스터를 찾아 반환
+ */
+private fun findClusterElements(
     groupedElements: Map<LatLng, List<Element>>,
     targetLatLng: LatLng,
-    tolerance: Double = 0.0001 // 허용 오차
+    tolerance: Double
 ): List<Element> {
     groupedElements.forEach { (key, value) ->
-        Log.d(
-            "MapPage",
-            "Checking LatLng: $key against Target: $targetLatLng with Tolerance: $tolerance"
-        )
-        if (Math.abs(key.latitude - targetLatLng.latitude) < tolerance &&
-            Math.abs(key.longitude - targetLatLng.longitude) < tolerance
-        ) {
-            Log.d("MapPage", "Match found! Key: $key, Elements: ${value.map { it.imageUrl }}")
+        if (isWithinTolerance(key, targetLatLng, tolerance)) {
             return value
         }
     }
-    Log.d("MapPage", "No matching elements found for LatLng: $targetLatLng")
     return emptyList()
 }
-
