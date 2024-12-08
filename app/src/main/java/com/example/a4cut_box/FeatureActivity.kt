@@ -123,7 +123,10 @@ class FeatureActivity : ComponentActivity() {
                             HomePage()
                         }
                         composable("calendar") {
-                            CalendarPage()
+                            CalendarPage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable(
                             "photoDetail/{id}",
