@@ -49,11 +49,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a4cut_box.R
+import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.ui.theme.BoxBlack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
+fun CameraSavePage(
+    modifier: Modifier = Modifier,
+    onClickBack: () -> Unit,
+    onClickSave: () -> Unit,
+    viewModel: FeatureViewModel
+) {
     val scrollState0 = rememberScrollState()
     val scrollState1 = rememberScrollState()
     var location by remember { mutableStateOf("동작구 상도동") }
@@ -222,7 +228,15 @@ fun CameraSavePage(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .fillMaxWidth()
-                    .clickable(onClick = {})
+                    .clickable(onClick = {
+                        viewModel.sendElement(
+                            imageUrl = "https://firebasestorage.googleapis.com/v0/b/fourcutbox.firebasestorage.app/o/KakaoTalk_Photo_2024-11-30-23-46-08.jpeg?alt=media&token=533282cb-cc51-4384-8a09-58c54f0a24ab",
+                            loadAddress = location,
+                            memo = memo,
+                            tags = tagList
+                        )
+                        onClickSave()
+                    })
                     .clip(RoundedCornerShape(8.dp))
                     .background(BoxBlack),
                 contentAlignment = Alignment.Center
