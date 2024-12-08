@@ -148,7 +148,8 @@ class FeatureActivity : ComponentActivity() {
                                 goToMainActivity = {
                                     val intent = Intent(context, MainActivity::class.java)
                                     context.startActivity(intent)
-                                }
+                                },
+                                viewModel = viewModel
                             )
                         }
                     }
