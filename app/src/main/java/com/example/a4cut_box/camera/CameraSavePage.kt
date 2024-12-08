@@ -1,5 +1,9 @@
 package com.example.a4cut_box.camera
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
@@ -22,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,7 +38,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,31 +50,84 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a4cut_box.R
 import com.example.a4cut_box.model.FeatureViewModel
+import com.example.a4cut_box.model.LocationViewModel
 import com.example.a4cut_box.ui.theme.BoxBlack
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+fun getRoadAddress(context: Context, latitude: Double, longitude: Double): String {
+    val geocoder = Geocoder(context, Locale("ko"))
+    val addressList: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+
+    Log.d("me", addressList.toString())
+    return if (!addressList.isNullOrEmpty()) {
+        addressList[0].getAddressLine(0)
+    } else {
+        "주소를 찾을 수 없습니다."
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun CameraSavePage(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickSave: () -> Unit,
-    viewModel: FeatureViewModel
+    featureViewModel: FeatureViewModel
 ) {
+    // 위치 권한 설정
+    val locationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
+    val permissionState = rememberPermissionState(locationPermission)
+
+    // 퍼미션 체크 및 처리
+    if (!permissionState.status.isGranted) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text("위치 권한이 필요합니다.")
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { permissionState.launchPermissionRequest() }) {
+                Text("권한 요청")
+            }
+        }
+        return
+    }
+
     val scrollState0 = rememberScrollState()
     val scrollState1 = rememberScrollState()
-    var location by remember { mutableStateOf("동작구 상도동") }
+    var location by remember { mutableStateOf("") }
+    var latitude by remember { mutableDoubleStateOf(0.0) }
+    var longitude by remember { mutableDoubleStateOf(0.0) }
     var memo by remember { mutableStateOf("") }
     var tagInput by remember { mutableStateOf("") }
     var tagList = remember { mutableStateListOf<String>() }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val locationViewModel: LocationViewModel = viewModel()
+
+    LaunchedEffect(key1 = "") {
+        locationViewModel.init(context)
+        locationViewModel.getCurrentLocation { loc ->
+            val address = getRoadAddress(context, loc.latitude, loc.longitude)
+            location = address
+            latitude = loc.latitude
+            longitude = loc.longitude
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -229,9 +290,11 @@ fun CameraSavePage(
                     .padding(vertical = 16.dp)
                     .fillMaxWidth()
                     .clickable(onClick = {
-                        viewModel.sendElement(
+                        featureViewModel.sendElement(
                             imageUrl = "https://firebasestorage.googleapis.com/v0/b/fourcutbox.firebasestorage.app/o/KakaoTalk_Photo_2024-11-30-23-46-08.jpeg?alt=media&token=533282cb-cc51-4384-8a09-58c54f0a24ab",
-                            loadAddress = location,
+                            roadAddress = location,
+                            longitude = longitude,
+                            latitude = latitude,
                             memo = memo,
                             tags = tagList
                         )
