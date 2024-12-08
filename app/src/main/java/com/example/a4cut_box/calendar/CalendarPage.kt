@@ -1,10 +1,12 @@
 package com.example.a4cut_box.calendar
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +50,7 @@ import com.example.a4cut_box.ui.theme.BoxWhite
 import java.time.LocalDate
 import java.time.YearMonth
 
+@SuppressLint("RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarPage() {
@@ -143,7 +146,10 @@ fun CalendarPage() {
                         .fillMaxWidth()
                         .size(width = 48.dp, height = 104.dp)
                         .padding(2.dp)
-                        .clickable { if (date != null) selectedDate = date },
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { if (date != null) selectedDate = date },
                 ) {
                     if (date != null) {
                         val textColor = when {
