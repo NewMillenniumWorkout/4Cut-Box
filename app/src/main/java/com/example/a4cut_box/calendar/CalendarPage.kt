@@ -2,6 +2,7 @@ package com.example.a4cut_box.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -33,9 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.a4cut_box.R
 import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
 import com.example.a4cut_box.ui.theme.BoxWhite
@@ -44,7 +50,7 @@ import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarPage(modifier: Modifier = Modifier) {
+fun CalendarPage() {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
     fun getCalendarDates(yearMonth: YearMonth): List<LocalDate?> {
@@ -131,26 +137,27 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                 .fillMaxSize()
         ) {
             items(calendarDates) { date ->
-                Column(
+                Box(
+                    contentAlignment = Alignment.TopCenter,
                     modifier = Modifier
                         .fillMaxWidth()
                         .size(width = 48.dp, height = 104.dp)
                         .padding(2.dp)
                         .clickable { if (date != null) selectedDate = date },
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        contentAlignment = Alignment.TopCenter,
-                        modifier = Modifier
-                    ) {
-                        if (date != null) {
-                            val textColor = when {
-                                selectedDate == date -> BoxWhite
-                                date.dayOfWeek.value == 6 -> Color(0xFF337FF1)
-                                date.dayOfWeek.value == 7 -> Color(0xFFF57171)
-                                else -> BoxBlack
-                            }
+                    if (date != null) {
+                        val textColor = when {
+                            selectedDate == date -> BoxWhite
+                            date.dayOfWeek.value == 6 -> Color(0xFF337FF1)
+                            date.dayOfWeek.value == 7 -> Color(0xFFF57171)
+                            else -> BoxBlack
+                        }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
@@ -165,9 +172,18 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                                     fontWeight = FontWeight.Medium
                                 )
                             }
+                            Image(
+                                painter = painterResource(id = R.drawable.sample_image),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(20.dp))
+                            )
                         }
                     }
-
                 }
             }
         }
