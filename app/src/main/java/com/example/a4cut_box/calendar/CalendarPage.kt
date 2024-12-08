@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -42,7 +44,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.example.a4cut_box.model.Element
 import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
@@ -55,8 +59,10 @@ import java.time.YearMonth
 @Composable
 fun CalendarPage(featureViewModel: FeatureViewModel) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-
     val list by featureViewModel.elements.collectAsState()
+    var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+    var isDialogOpen by remember { mutableStateOf(false) }
+    var dialogImages by remember { mutableStateOf(listOf<Element>()) }
 
     fun getCalendarDates(yearMonth: YearMonth): List<LocalDate?> {
         val daysInMonth = yearMonth.lengthOfMonth()
@@ -77,8 +83,6 @@ fun CalendarPage(featureViewModel: FeatureViewModel) {
     }
 
     val calendarDates = getCalendarDates(currentMonth)
-    var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
-
 
     Column(
         modifier = Modifier
@@ -159,7 +163,13 @@ fun CalendarPage(featureViewModel: FeatureViewModel) {
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { if (date != null) selectedDate = date },
+                        ) {
+                            if (filteredData.isNotEmpty()) {
+                                selectedDate = date
+                                dialogImages = filteredData
+                                isDialogOpen = true
+                            }
+                        },
                 ) {
                     if (date != null) {
                         val textColor = when {
@@ -215,4 +225,39 @@ fun CalendarPage(featureViewModel: FeatureViewModel) {
             }
         }
     }
+    if (isDialogOpen) {
+        Dialog(onDismissRequest = { isDialogOpen = false }) {
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clip(RoundedCornerShape(64.dp))
+                    .background(BoxBlack)
+                    .padding(16.dp)
+            ) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .heightIn(min = 80.dp, max = 400.dp)
+                ) {
+                    items(dialogImages) { element ->
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .clip(RoundedCornerShape(48.dp))
+                        ) {
+                            AsyncImage(
+                                model = element.imageUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
