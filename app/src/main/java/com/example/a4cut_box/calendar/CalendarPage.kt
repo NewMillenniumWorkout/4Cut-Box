@@ -3,7 +3,6 @@ package com.example.a4cut_box.calendar
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.a4cut_box.R
+import coil.compose.AsyncImage
+import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
 import com.example.a4cut_box.ui.theme.BoxWhite
@@ -53,8 +53,10 @@ import java.time.YearMonth
 @SuppressLint("RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarPage() {
+fun CalendarPage(featureViewModel: FeatureViewModel) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+
+    val list by featureViewModel.elements.collectAsState()
 
     fun getCalendarDates(yearMonth: YearMonth): List<LocalDate?> {
         val daysInMonth = yearMonth.lengthOfMonth()
@@ -140,6 +142,14 @@ fun CalendarPage() {
                 .fillMaxSize()
         ) {
             items(calendarDates) { date ->
+                val filteredData = list.filter { element ->
+                    element.createdAt.let {
+                        val elementDate = LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000))
+                        elementDate == date
+                    }
+                }
+
+
                 Box(
                     contentAlignment = Alignment.TopCenter,
                     modifier = Modifier
@@ -178,16 +188,27 @@ fun CalendarPage() {
                                     fontWeight = FontWeight.Medium
                                 )
                             }
-                            Image(
-                                painter = painterResource(id = R.drawable.sample_image),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(20.dp))
-                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            if (filteredData.isNotEmpty()) {
+                                AsyncImage(
+                                    model = filteredData.first().imageUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(20.dp))
+                                )
+                                if (filteredData.size > 1) {
+                                    Text(
+                                        text = "+${filteredData.size - 1}",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Light,
+                                        color = BoxBlack,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
