@@ -19,8 +19,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -41,8 +41,6 @@ import com.example.a4cut_box.ui.theme.BoxGray
 import com.example.a4cut_box.ui.theme.BoxWhite
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -84,7 +82,7 @@ fun CalendarPage(modifier: Modifier = Modifier) {
         ) {
             IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "이전 달",
                     tint = BoxGray
                 )
@@ -93,13 +91,11 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                 color = BoxBlack,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                text = "${currentMonth.year}년 ${
-                    currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                }"
+                text = "${currentMonth.year}년 ${currentMonth.month.value}월"
             )
             IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowForward,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "다음 달",
                     tint = BoxGray
                 )
