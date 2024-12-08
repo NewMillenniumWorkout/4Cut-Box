@@ -168,7 +168,11 @@ fun CalendarPage(navController: NavController, featureViewModel: FeatureViewMode
                             if (filteredData.isNotEmpty()) {
                                 selectedDate = date
                                 dialogImages = filteredData
-                                isDialogOpen = true
+                                if (filteredData.size > 1) {
+                                    isDialogOpen = true
+                                } else {
+                                    navController.navigate("photoDetail/${filteredData.first().id}")
+                                }
                             }
                         },
                 ) {
