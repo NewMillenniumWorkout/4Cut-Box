@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,27 +30,44 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.a4cut_box.R
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhotoDetailPage(modifier: Modifier = Modifier) {
+fun PhotoDetailPage(
+    navController: NavController, modifier: Modifier = Modifier, onEditClick: ()
+    -> Unit, onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
     Scaffold(
         containerColor = Color.White,
         modifier = Modifier.padding(bottom = 32.dp),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("2024.10.27") },
+                title = {
+                    Text(
+                        text = "2024.10.27",
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back press */ }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.left_arrow),
+                            contentDescription = "Back",
+                            modifier = Modifier.size(32.dp)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -65,11 +85,11 @@ fun PhotoDetailPage(modifier: Modifier = Modifier) {
                     .fillMaxSize()
                     .padding(paddingValues)
                     .background(Color.White)
-//                    .verticalScroll(rememberScrollState())
             ) {
                 item {
                     Box(
                         modifier = Modifier
+//                            .wrapContentSize(Alignment.TopStart)
                             .fillMaxWidth()
                             .padding(horizontal = 48.dp)
                     ) {
@@ -90,7 +110,8 @@ fun PhotoDetailPage(modifier: Modifier = Modifier) {
                     )
                     {
                         Row(
-                            modifier = Modifier.fillMaxWidth(), // 가로로 꽉 채우기
+                            modifier = Modifier
+                                .fillMaxWidth(), // 가로로 꽉 채우기
                             horizontalArrangement = Arrangement.SpaceBetween, // 좌우로 배치
                             verticalAlignment = Alignment.CenterVertically // 수직 가운데 정렬
                         ) {
@@ -99,16 +120,58 @@ fun PhotoDetailPage(modifier: Modifier = Modifier) {
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
-                            IconButton(onClick = { /* 수정 버튼 클릭 이벤트 */ }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert, // 수정 버튼 아이콘
-                                    contentDescription = "Edit",
-                                    tint = Color.Gray
-                                )
+                            Box {
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert, // 수정 버튼 아이콘
+                                        contentDescription = "Edit",
+                                        tint = Color.Gray
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }, // 메뉴 외부 클릭 시 닫기
+                                    modifier = Modifier
+                                        .background(Color.White),
+                                    offset = DpOffset(x = 0.dp, y = 0.dp)
+                                ) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text("수정하기", color = Color.Black)
+                                        },
+                                        onClick = {
+                                            expanded = false
+                                            onEditClick() // 수정하기 클릭 이벤트
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.Edit,
+                                                contentDescription = "Edit",
+                                                tint = Color.Gray
+                                            )
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text("삭제하기", color = Color.Red)
+                                        },
+                                        onClick = {
+                                            expanded = false
+                                            onDeleteClick() // 삭제하기 클릭 이벤트
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Delete",
+                                                tint = Color.Red
+                                            )
+                                        }
+                                    )
+                                }
+
                             }
                         }
                         Spacer(modifier = Modifier.padding(4.dp))
-
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 8.dp) // 아이템 간 간격

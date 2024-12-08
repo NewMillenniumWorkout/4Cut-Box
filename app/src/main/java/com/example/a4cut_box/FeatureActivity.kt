@@ -30,6 +30,7 @@ import com.example.a4cut_box.calendar.CalendarPage
 import com.example.a4cut_box.camera.CameraPage
 import com.example.a4cut_box.camera.CameraSavePage
 import com.example.a4cut_box.home.HomePage
+import com.example.a4cut_box.map.MapPage
 import com.example.a4cut_box.photoDetail.PhotoDetailPage
 import com.example.a4cut_box.setting.SettingPage
 import com.example.a4cut_box.ui.theme.BoxBlack
@@ -111,7 +112,10 @@ class FeatureActivity : ComponentActivity() {
                             CalendarPage()
                         }
                         composable("photoDetail") {
-                            PhotoDetailPage()
+                            PhotoDetailPage(
+                                navController = navController,
+                                onEditClick = {},
+                                onDeleteClick = {})
                         }
                         composable("camera") {
                             CameraPage()
@@ -120,8 +124,7 @@ class FeatureActivity : ComponentActivity() {
                             CameraSavePage()
                         }
                         composable("map") {
-//                            MapPage()
-                            PhotoDetailPage()
+                            MapPage(navController = navController)
                         }
                         composable("setting") {
                             SettingPage(
