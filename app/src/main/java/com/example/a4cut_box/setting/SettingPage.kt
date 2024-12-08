@@ -21,7 +21,7 @@ fun SettingPage(
     goToMainActivity: () -> Unit,
     featureViewModel: FeatureViewModel
 ) {
-    val list = featureViewModel.elements.collectAsState().value
+    val list = featureViewModel.elements.collectAsState(initial = emptyList()).value
 
     LazyColumn(modifier = modifier) {
         item {

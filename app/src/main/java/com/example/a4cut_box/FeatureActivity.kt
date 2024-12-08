@@ -1,6 +1,7 @@
 package com.example.a4cut_box
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -144,22 +145,26 @@ class FeatureActivity : ComponentActivity() {
                             }
                         }
                         composable("camera") {
-                            CameraPage(goToCameraSavePage = {
-                                navController.navigate("cameraSave")
+                            CameraPage(goToCameraSavePage = { imageUri ->
+                                navController.navigate("cameraSave/${Uri.encode(imageUri)}")
                             })
                         }
-                        composable("cameraSave") {
+                        composable(
+                            "cameraSave/{imageUri}",
+                            arguments = listOf(navArgument("imageUri") {
+                                type = NavType.StringType
+                            })
+                        ) { backStackEntry ->
+                            val imageUri =
+                                Uri.decode(backStackEntry.arguments?.getString("imageUri") ?: "")
                             CameraSavePage(
-                                onClickBack = {
-                                    navController.navigateUp()
-                                },
-                                featureViewModel = featureViewModel,
-                                onClickSave = {
-                                    navController.navigateUp()
-                                    navController.navigateUp()
-                                }
+                                imageUri = imageUri,
+                                onClickBack = { navController.navigateUp() },
+                                onClickSave = { navController.navigateUp() },
+                                featureViewModel = featureViewModel
                             )
                         }
+
                         composable("map") {
                             MapPage(
                                 navController = navController,
