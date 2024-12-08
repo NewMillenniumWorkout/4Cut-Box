@@ -19,9 +19,9 @@ import com.google.firebase.auth.FirebaseAuth
 fun SettingPage(
     modifier: Modifier = Modifier,
     goToMainActivity: () -> Unit,
-    viewModel: FeatureViewModel
+    featureViewModel: FeatureViewModel
 ) {
-    val list = viewModel.elements.collectAsState().value
+    val list = featureViewModel.elements.collectAsState().value
 
     LazyColumn(modifier = modifier) {
         item {
@@ -57,7 +57,7 @@ fun ElementItem(element: Element, modifier: Modifier = Modifier) {
         // 텍스트 정보
         Column(modifier = Modifier.weight(2f)) {
             Text(text = "Memo: ${element.memo}")
-            Text(text = "Address: ${element.loadAddress}")
+            Text(text = "Address: ${element.roadAddress}")
             Text(text = "Created At: ${element.createdAt}")
             Text(text = "Tags: ${element.tags.joinToString(", ")}")
         }
