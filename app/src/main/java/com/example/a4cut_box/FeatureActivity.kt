@@ -124,7 +124,10 @@ class FeatureActivity : ComponentActivity() {
                             HomePage()
                         }
                         composable("calendar") {
-                            CalendarPage(featureViewModel = featureViewModel)
+                            CalendarPage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable("photoDetail") {
                             PhotoDetailPage()

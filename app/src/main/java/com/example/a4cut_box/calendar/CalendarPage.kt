@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.a4cut_box.model.Element
 import com.example.a4cut_box.model.FeatureViewModel
@@ -57,7 +58,7 @@ import java.time.YearMonth
 @SuppressLint("RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarPage(featureViewModel: FeatureViewModel) {
+fun CalendarPage(navController: NavController, featureViewModel: FeatureViewModel) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     val list by featureViewModel.elements.collectAsState()
     var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
@@ -244,6 +245,7 @@ fun CalendarPage(featureViewModel: FeatureViewModel) {
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(48.dp))
+                                .clickable { navController.navigate("photoDetail/${element.id}") }
                         ) {
                             AsyncImage(
                                 model = element.imageUrl,
