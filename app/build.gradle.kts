@@ -93,5 +93,5 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.4.0")
     implementation("com.google.accompanist:accompanist-permissions:0.33.0-alpha")
     implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation ("com.kakao.maps.open:android:2.12.8")
+    implementation("com.kakao.maps.open:android:2.12.8")
 }

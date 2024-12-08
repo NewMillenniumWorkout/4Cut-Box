@@ -1,6 +1,7 @@
 package com.example.a4cut_box.photoDetail
 
-import androidx.compose.foundation.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,13 +42,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.a4cut_box.R
+import com.example.a4cut_box.model.Element
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhotoDetailPage(
-    navController: NavController, modifier: Modifier = Modifier, onEditClick: ()
-    -> Unit, onDeleteClick: () -> Unit
+    navController: NavController,
+    element: Element,
+    modifier: Modifier = Modifier,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     Scaffold(
@@ -57,7 +67,7 @@ fun PhotoDetailPage(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "2024.10.27",
+                        text = formatTimestamp(element.createdAt),
                         style = MaterialTheme.typography.headlineMedium,
                     )
                 },
@@ -93,9 +103,8 @@ fun PhotoDetailPage(
                             .fillMaxWidth()
                             .padding(horizontal = 48.dp)
                     ) {
-                        // Replace this with your image loading library (e.g., Coil)
-                        Image(
-                            painter = painterResource(id = R.drawable.test_image), // Placeholder
+                        AsyncImage(
+                            model = element.imageUrl, // Element의 이미지 URL
                             contentDescription = "Photo",
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -116,7 +125,7 @@ fun PhotoDetailPage(
                             verticalAlignment = Alignment.CenterVertically // 수직 가운데 정렬
                         ) {
                             Text(
-                                text = "가을 축제",
+                                text = element.memo,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -184,7 +193,7 @@ fun PhotoDetailPage(
                             )
                             Spacer(modifier = Modifier.width(8.dp)) // 아이콘과 텍스트 사이 간격
                             Text(
-                                text = "동작구 상도동",
+                                text = element.roadAddress,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.Gray
                             )
@@ -201,7 +210,7 @@ fun PhotoDetailPage(
                             )
                             Spacer(modifier = Modifier.width(8.dp)) // 아이콘과 텍스트 사이 간격
                             Text(
-                                text = "김민식, 김여진, 이훈의, 장민석",
+                                text = element.tags.joinToString(", "),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.Gray
                             )
@@ -211,4 +220,11 @@ fun PhotoDetailPage(
             }
         }
     )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatTimestamp(timestamp: Long): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        .withZone(ZoneId.systemDefault()) // 시스템 기본 시간대
+    return formatter.format(Instant.ofEpochMilli(timestamp))
 }

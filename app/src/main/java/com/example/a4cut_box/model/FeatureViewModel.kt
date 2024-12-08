@@ -60,4 +60,8 @@ class FeatureViewModel : ViewModel() {
                 }
             })
     }
+
+    fun getElementById(id: String): Element? {
+        return elements.value.find { it.id == id }
+    }
 }

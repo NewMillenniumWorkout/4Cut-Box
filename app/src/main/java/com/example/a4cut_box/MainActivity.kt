@@ -1,10 +1,12 @@
 package com.example.a4cut_box
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -19,8 +21,7 @@ import com.example.a4cut_box.ui.theme._4CutBoxTheme
 import com.google.firebase.FirebaseApp
 import com.kakao.vectormap.KakaoMapSdk
 
-
-
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
