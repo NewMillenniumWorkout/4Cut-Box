@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -32,6 +33,7 @@ import com.example.a4cut_box.camera.CameraPage
 import com.example.a4cut_box.camera.CameraSavePage
 import com.example.a4cut_box.home.HomePage
 import com.example.a4cut_box.map.MapPage
+import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.photoDetail.PhotoDetailPage
 import com.example.a4cut_box.setting.SettingPage
 import com.example.a4cut_box.ui.theme.BoxBlack
@@ -40,11 +42,15 @@ import com.example.a4cut_box.ui.theme._4CutBoxTheme
 
 
 class FeatureActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this@FeatureActivity
 
+
         setContent {
+            val viewModel = viewModel<FeatureViewModel>()
+            viewModel.listenForElement()
             val navController = rememberNavController()
             var selectedButton by remember { mutableStateOf("") }
 
@@ -126,7 +132,8 @@ class FeatureActivity : ComponentActivity() {
                             CameraSavePage(
                                 onClickBack = {
                                     navController.navigateUp()
-                                }
+                                },
+                                viewModel = viewModel
                             )
                         }
                         composable("map") {
