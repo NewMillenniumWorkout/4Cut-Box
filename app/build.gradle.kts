@@ -78,4 +78,6 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.0")
     implementation("androidx.camera:camera-extensions:1.4.0")
     implementation("com.google.accompanist:accompanist-permissions:0.33.0-alpha")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 }
