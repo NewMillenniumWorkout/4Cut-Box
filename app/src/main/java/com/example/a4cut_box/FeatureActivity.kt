@@ -118,7 +118,7 @@ class FeatureActivity : ComponentActivity() {
                             HomePage()
                         }
                         composable("calendar") {
-                            CalendarPage()
+                            CalendarPage(viewModel = viewModel)
                         }
                         composable("photoDetail") {
                             PhotoDetailPage()
@@ -133,7 +133,11 @@ class FeatureActivity : ComponentActivity() {
                                 onClickBack = {
                                     navController.navigateUp()
                                 },
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                onClickSave = {
+                                    navController.navigateUp()
+                                    navController.navigateUp()
+                                }
                             )
                         }
                         composable("map") {
