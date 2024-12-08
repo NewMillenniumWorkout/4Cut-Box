@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -18,6 +17,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -114,7 +114,6 @@ class FeatureActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
-                    Modifier.background(Color.White)
                     NavHost(
                         modifier = Modifier.padding(innerPadding),
                         navController = navController,
@@ -126,8 +125,24 @@ class FeatureActivity : ComponentActivity() {
                         composable("calendar") {
                             CalendarPage()
                         }
-                        composable("photoDetail") {
-                            PhotoDetailPage()
+                        composable(
+                            "photoDetail/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val id = backStackEntry.arguments?.getString("id") ?: return@composable
+                            val element = featureViewModel.getElementById(id)
+
+                            if (element == null) {
+                                // 잘못된 id일 경우 처리
+                                Text("Element not found")
+                            } else {
+                                PhotoDetailPage(
+                                    navController = navController,
+                                    element = element,
+                                    onEditClick = {},
+                                    onDeleteClick = {}
+                                )
+                            }
                         }
                         composable("camera") {
                             CameraPage(goToCameraSavePage = { imageUri ->
@@ -151,7 +166,10 @@ class FeatureActivity : ComponentActivity() {
                         }
 
                         composable("map") {
-                            MapPage()
+                            MapPage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable("setting") {
                             SettingPage(
