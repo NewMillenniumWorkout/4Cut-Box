@@ -68,7 +68,7 @@ fun CalendarPage(modifier: Modifier = Modifier) {
     }
 
     val calendarDates = getCalendarDates(currentMonth)
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
 
 
     Column(
@@ -117,7 +117,7 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                     text = day,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (index == 0 || index == 6) Color(0xFFFFAFAF) else Color.Gray
+                    color = BoxGray
                 )
             }
         }
@@ -133,9 +133,8 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .size(width = 48.dp, height = 96.dp)
+                        .size(width = 48.dp, height = 104.dp)
                         .padding(2.dp)
-                        .background(Color.Yellow)
                         .clickable { if (date != null) selectedDate = date },
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -150,12 +149,12 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(BoxBlack)
+                                    .background(if (selectedDate == date) BoxBlack else Color.Transparent)
                             ) {
                                 Text(
                                     text = date.dayOfMonth.toString(),
                                     fontSize = 14.sp,
-                                    color = BoxWhite,
+                                    color = if (selectedDate == date) BoxWhite else BoxBlack,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
