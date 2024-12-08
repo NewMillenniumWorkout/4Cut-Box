@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -116,13 +118,16 @@ fun CameraSavePage(
     var longitude by remember { mutableDoubleStateOf(0.0) }
     var memo by remember { mutableStateOf("") }
     var tagInput by remember { mutableStateOf("") }
-    var tagList = remember { mutableStateListOf<String>() }
+    val tagList = remember { mutableStateListOf<String>() }
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val locationViewModel: LocationViewModel = viewModel()
+    val isUploading by featureViewModel.isUploading.collectAsState()
+    var isUploadStarted by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = "") {
-        locationViewModel.init(context)
+
+    locationViewModel.init(context)
+    LaunchedEffect(key1 = location) {
         locationViewModel.getCurrentLocation { loc ->
             val address = getRoadAddress(context, loc.latitude, loc.longitude)
             location = address
@@ -131,128 +136,109 @@ fun CameraSavePage(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color.White,
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black
-                ),
-                title = {
+    LaunchedEffect(key1 = isUploading) {
+        if (isUploadStarted && !isUploading) {
+            onClickSave()
+        }
+    }
+
+
+    if (isUploading) {
+        androidx.compose.ui.window.Dialog(onDismissRequest = { }) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
+        }
+    } else {
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.White,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.White,
+                        titleContentColor = Color.Black
+                    ),
+                    title = {
+                        Text(
+                            "2024.10.27",
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onClickBack) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = "Back",
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    })
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 40.dp)
+                    .fillMaxSize()
+                    .verticalScroll(scrollState0)
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Log.d("me", imageUri)
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = imageUri,
+                        placeholder = painterResource(R.drawable.loading),
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = location, color = Color.Gray)
+                }
+                Spacer(modifier = Modifier.size(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "2024.10.27",
+                        text = "메모",
                         style = TextStyle(
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
                         )
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onClickBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "Back",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                })
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 40.dp)
-                .fillMaxSize()
-                .verticalScroll(scrollState0)
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Log.d("me", imageUri)
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = imageUri,
-                    placeholder = painterResource(R.drawable.loading),
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentScale = ContentScale.FillWidth
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Place,
-                    contentDescription = null,
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = location, color = Color.Gray)
-            }
-            Spacer(modifier = Modifier.size(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "메모",
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.size(12.dp))
-            OutlinedTextField(
-                value = memo,
-                onValueChange = { memo = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .requiredHeightIn(min = 120.dp, max = 200.dp),
-                placeholder = {
-                    Text(text = "메모를 입력하세요.")
-                },
-                maxLines = 5,
-                singleLine = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFCCCCCC),
-                    unfocusedBorderColor = Color(0xFFCCCCCC)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
-            Spacer(modifier = Modifier.size(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Tag",
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.size(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            )
-            {
+                }
+                Spacer(modifier = Modifier.size(12.dp))
                 OutlinedTextField(
-                    value = tagInput,
-                    onValueChange = { tagInput = it.filterNot { char -> char.isWhitespace() } },
-                    placeholder = {
-                        Text(text = "테그를 입력하세요.")
-                    },
+                    value = memo,
+                    onValueChange = { memo = it },
                     modifier = Modifier
-                        .weight(1f)
-                        .requiredHeightIn(min = 56.dp, max = 56.dp),
-                    maxLines = 1,
+                        .fillMaxWidth()
+                        .requiredHeightIn(min = 120.dp, max = 200.dp),
+                    placeholder = {
+                        Text(text = "메모를 입력하세요.")
+                    },
+                    maxLines = 5,
                     singleLine = false,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFCCCCCC),
@@ -260,65 +246,103 @@ fun CameraSavePage(
                     ),
                     shape = RoundedCornerShape(16.dp)
                 )
-                Spacer(modifier = Modifier.size(8.dp))
-                Box(
-                    Modifier
-                        .size(50.dp)
-                        .clickable(onClick = {
-                            if (!tagList.contains(tagInput)) {
-                                tagList.add(tagInput)
-                            }
-                            tagInput = ""
-                            focusManager.clearFocus() // 입력창 포커스 제거
-                        })
+                Spacer(modifier = Modifier.size(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.tag_plus),
-                        contentDescription = null,
-                        modifier = Modifier.size(56.dp),
-                        contentScale = ContentScale.Crop
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Tag",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                        )
                     )
                 }
-            }
-            Spacer(modifier = Modifier.size(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 2.dp)
-                    .horizontalScroll(scrollState1),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                tagList.forEach { tag -> TagElement(tag) { tagList.remove(tag) } }
-            }
-            Spacer(modifier = Modifier.size(52.dp))
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth()
-                    .clickable(onClick = {
-                        featureViewModel.sendElement(
-                            imageUrl = "https://firebasestorage.googleapis.com/v0/b/fourcutbox.firebasestorage.app/o/KakaoTalk_Photo_2024-11-30-23-46-08.jpeg?alt=media&token=533282cb-cc51-4384-8a09-58c54f0a24ab",
-                            roadAddress = location,
-                            longitude = longitude,
-                            latitude = latitude,
-                            memo = memo,
-                            tags = tagList
-                        )
-                        onClickSave()
-                    })
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(BoxBlack),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "저장하기",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(12.dp)
+                Spacer(modifier = Modifier.size(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 )
+                {
+                    OutlinedTextField(
+                        value = tagInput,
+                        onValueChange = { tagInput = it.filterNot { char -> char.isWhitespace() } },
+                        placeholder = {
+                            Text(text = "테그를 입력하세요.")
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .requiredHeightIn(min = 56.dp, max = 56.dp),
+                        maxLines = 1,
+                        singleLine = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFFCCCCCC),
+                            unfocusedBorderColor = Color(0xFFCCCCCC)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Box(
+                        Modifier
+                            .size(50.dp)
+                            .clickable(onClick = {
+                                if (!tagList.contains(tagInput)) {
+                                    tagList.add(tagInput)
+                                }
+                                tagInput = ""
+                                focusManager.clearFocus() // 입력창 포커스 제거
+                            })
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.tag_plus),
+                            contentDescription = null,
+                            modifier = Modifier.size(56.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.size(12.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 2.dp)
+                        .horizontalScroll(scrollState1),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    tagList.forEach { tag -> TagElement(tag) { tagList.remove(tag) } }
+                }
+                Spacer(modifier = Modifier.size(52.dp))
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth()
+                        .clickable(onClick = {
+                            isUploadStarted = true
+                            featureViewModel.sendElement(
+                                imageUri = imageUri,
+                                roadAddress = location,
+                                longitude = longitude,
+                                latitude = latitude,
+                                memo = memo,
+                                tags = tagList
+                            )
+//                            onClickSave()
+                        })
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(BoxBlack),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "저장하기",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.size(104.dp))
             }
-            Spacer(modifier = Modifier.size(104.dp))
         }
     }
 }
