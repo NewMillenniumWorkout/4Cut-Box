@@ -4,18 +4,29 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,12 +37,15 @@ import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarPage(modifier: Modifier = Modifier) {
-    fun getCalendarDates(year: Int, month: Int): List<LocalDate?> {
-        val yearMonth = YearMonth.of(year, month)
+    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+
+    fun getCalendarDates(yearMonth: YearMonth): List<LocalDate?> {
         val daysInMonth = yearMonth.lengthOfMonth()
         val firstDayOfMonth = yearMonth.atDay(1)
         val startDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
@@ -49,8 +63,7 @@ fun CalendarPage(modifier: Modifier = Modifier) {
         return dates
     }
 
-    val calendarDates = getCalendarDates(2024, 12)
-    println(calendarDates.joinToString { it?.toString() ?: " " })
+    val calendarDates = getCalendarDates(currentMonth)
 
     Column(
         modifier = Modifier
@@ -63,23 +76,63 @@ fun CalendarPage(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "이전 달",
+                    tint = BoxGray
+                )
+            }
             Text(
                 color = BoxBlack,
-                fontSize = 32.sp,
-                fontWeight = FontWeight(900),
-                text = "10월"
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                text = "${currentMonth.year}년 ${
+                    currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                }"
             )
-            IconButton(
-                onClick = {}
-            ) {
+            IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
                 Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = null,
-                    modifier = Modifier.size(36.dp),
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "다음 달",
                     tint = BoxGray
                 )
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            listOf("일", "월", "화", "수", "목", "금", "토").forEachIndexed { index, day ->
+                Text(
+                    text = day,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (index == 0 || index == 6) Color(0xFFFFAFAF) else Color.Gray
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(7),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(calendarDates) { date ->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(4.dp)
+                        .background(if (date != null) Color.LightGray else Color.Transparent)
+                ) {
+                    Text(text = date?.dayOfMonth?.toString() ?: "")
+                }
+            }
+        }
     }
 }
