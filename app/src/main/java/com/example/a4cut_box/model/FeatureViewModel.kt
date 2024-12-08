@@ -18,16 +18,17 @@ class FeatureViewModel : ViewModel() {
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    fun sendElement() {
+    fun sendElement(imageUrl: String, loadAddress: String, memo: String, tags: List<String>) {
         val uid = firebaseAuth.currentUser?.uid ?: ""
         val element = Element(
             id = firebaseDatabase.reference.child("element").push().key ?: UUID.randomUUID()
                 .toString(),
             uid = uid,
-            imageUrl = "https://firebasestorage.googleapis.com/v0/b/fourcutbox.firebasestorage.app/o/KakaoTalk_Photo_2024-11-30-23-46-08.jpeg?alt=media&token=533282cb-cc51-4384-8a09-58c54f0a24ab",
-            loadAddress = "서울특별시 관악구 조원로 25",
-            memo = "오늘도 날이 좋구나!",
-            tags = listOf("포항", "테스트_데이터", "hello!")
+            imageUrl = imageUrl,
+            loadAddress = loadAddress,
+            memo = memo,
+            tags = tags
+
         )
 
         firebaseDatabase.reference.child("element").child(uid).push().setValue(element)
