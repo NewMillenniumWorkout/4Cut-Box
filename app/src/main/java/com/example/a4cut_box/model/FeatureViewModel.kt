@@ -18,14 +18,19 @@ class FeatureViewModel : ViewModel() {
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    fun sendElement(imageUrl: String, loadAddress: String, memo: String, tags: List<String>) {
+    fun sendElement(
+        imageUrl: String, roadAddress: String, latitude: Double,
+        longitude: Double, memo: String, tags: List<String>
+    ) {
         val uid = firebaseAuth.currentUser?.uid ?: ""
         val element = Element(
             id = firebaseDatabase.reference.child("element").push().key ?: UUID.randomUUID()
                 .toString(),
             uid = uid,
             imageUrl = imageUrl,
-            loadAddress = loadAddress,
+            roadAddress = roadAddress,
+            latitude = latitude,
+            longitude = longitude,
             memo = memo,
             tags = tags
 

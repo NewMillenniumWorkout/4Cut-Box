@@ -1,9 +1,11 @@
 package com.example.a4cut_box
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -43,14 +45,15 @@ import com.example.a4cut_box.ui.theme._4CutBoxTheme
 
 class FeatureActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this@FeatureActivity
 
 
         setContent {
-            val viewModel = viewModel<FeatureViewModel>()
-            viewModel.listenForElement()
+            val featureViewModel = viewModel<FeatureViewModel>()
+            featureViewModel.listenForElement()
             val navController = rememberNavController()
             var selectedButton by remember { mutableStateOf("") }
 
@@ -133,7 +136,7 @@ class FeatureActivity : ComponentActivity() {
                                 onClickBack = {
                                     navController.navigateUp()
                                 },
-                                viewModel = viewModel,
+                                featureViewModel = featureViewModel,
                                 onClickSave = {
                                     navController.navigateUp()
                                     navController.navigateUp()
@@ -149,7 +152,7 @@ class FeatureActivity : ComponentActivity() {
                                     val intent = Intent(context, MainActivity::class.java)
                                     context.startActivity(intent)
                                 },
-                                viewModel = viewModel
+                                featureViewModel = featureViewModel
                             )
                         }
                     }
