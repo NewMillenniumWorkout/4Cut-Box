@@ -113,7 +113,12 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                     text = day,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = BoxGray
+                    color = when (index) {
+                        0 -> Color(0xFFF57171)
+                        6 -> Color(0xFF337FF1)
+                        else -> Color.Gray
+                    }
+
                 )
             }
         }
@@ -140,6 +145,12 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                         modifier = Modifier
                     ) {
                         if (date != null) {
+                            val textColor = when {
+                                selectedDate == date -> BoxWhite
+                                date.dayOfWeek.value == 6 -> Color(0xFF337FF1)
+                                date.dayOfWeek.value == 7 -> Color(0xFFF57171)
+                                else -> BoxBlack
+                            }
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
@@ -150,7 +161,7 @@ fun CalendarPage(modifier: Modifier = Modifier) {
                                 Text(
                                     text = date.dayOfMonth.toString(),
                                     fontSize = 14.sp,
-                                    color = if (selectedDate == date) BoxWhite else BoxBlack,
+                                    color = textColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
