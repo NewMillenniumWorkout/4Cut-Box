@@ -1,9 +1,11 @@
 package com.example.a4cut_box
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -31,6 +34,7 @@ import com.example.a4cut_box.camera.CameraPage
 import com.example.a4cut_box.camera.CameraSavePage
 import com.example.a4cut_box.home.HomePage
 import com.example.a4cut_box.map.MapPage
+import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.photoDetail.PhotoDetailPage
 import com.example.a4cut_box.setting.SettingPage
 import com.example.a4cut_box.ui.theme.BoxBlack
@@ -39,18 +43,24 @@ import com.example.a4cut_box.ui.theme._4CutBoxTheme
 
 
 class FeatureActivity : ComponentActivity() {
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this@FeatureActivity
 
+
         setContent {
+            val featureViewModel = viewModel<FeatureViewModel>()
+            featureViewModel.listenForElement()
             val navController = rememberNavController()
             var selectedButton by remember { mutableStateOf("") }
 
             _4CutBoxTheme {
                 Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize(),
                     containerColor = Color.White,
-                    modifier = Modifier.fillMaxSize(),
                     floatingActionButtonPosition = FabPosition.Center,
                     floatingActionButton = {
                         FloatingActionButton(
@@ -118,10 +128,21 @@ class FeatureActivity : ComponentActivity() {
                                 onDeleteClick = {})
                         }
                         composable("camera") {
-                            CameraPage()
+                            CameraPage(goToCameraSavePage = {
+                                navController.navigate("cameraSave")
+                            })
                         }
                         composable("cameraSave") {
-                            CameraSavePage()
+                            CameraSavePage(
+                                onClickBack = {
+                                    navController.navigateUp()
+                                },
+                                featureViewModel = featureViewModel,
+                                onClickSave = {
+                                    navController.navigateUp()
+                                    navController.navigateUp()
+                                }
+                            )
                         }
                         composable("map") {
                             MapPage(navController = navController)
@@ -131,7 +152,8 @@ class FeatureActivity : ComponentActivity() {
                                 goToMainActivity = {
                                     val intent = Intent(context, MainActivity::class.java)
                                     context.startActivity(intent)
-                                }
+                                },
+                                featureViewModel = featureViewModel
                             )
                         }
                     }
