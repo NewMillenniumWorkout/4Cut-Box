@@ -5,7 +5,7 @@ data class Element(
     val uid: String = "",
     val imageUrl: String = "",
     val createdAt: Long = System.currentTimeMillis(),
-    val location: String = "",
+    val loadAddress: String = "",
     val memo: String = "",
     val tags: List<String> = listOf(),
 )
