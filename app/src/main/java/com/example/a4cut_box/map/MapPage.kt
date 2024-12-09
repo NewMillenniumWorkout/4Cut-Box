@@ -85,7 +85,8 @@ fun MapPage(
         clusterElements(elements, tolerance)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(elements) {
+        featureViewModel.listenForElement()
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION

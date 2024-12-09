@@ -120,7 +120,10 @@ class FeatureActivity : ComponentActivity() {
                         startDestination = "Home"
                     ) {
                         composable("Home") {
-                            HomePage()
+                            HomePage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable("calendar") {
                             CalendarPage(
@@ -143,7 +146,10 @@ class FeatureActivity : ComponentActivity() {
                                     navController = navController,
                                     element = element,
                                     onEditClick = {},
-                                    onDeleteClick = {}
+                                    onDeleteClick = {
+                                        featureViewModel.deleteElement(id)
+                                        navController.popBackStack()
+                                    }
                                 )
                             }
                         }
