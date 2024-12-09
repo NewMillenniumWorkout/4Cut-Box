@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.a4cut_box.model.FeatureViewModel
 import com.example.a4cut_box.ui.theme.BoxWhite
+import kotlin.math.sign
 
 @Composable
 fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
@@ -85,8 +86,16 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                 modifier = Modifier
                     .size(imageSize.dp)
                     .offset(
-                        x = relativePosition.x.dp,
-                        y = relativePosition.y.dp
+                        x = if (relativePosition.x != 0f && relativePosition.y == 0f) {
+                            relativePosition.x.dp + 24.dp * relativePosition.x.sign
+                        } else {
+                            relativePosition.x.dp
+                        },
+                        y = if (relativePosition.x == 0f && relativePosition.y != 0f) {
+                            relativePosition.y.dp + 24.dp * relativePosition.y.sign
+                        } else {
+                            relativePosition.y.dp
+                        }
                     )
                     .zIndex(zIndexValue),
                 shape = RoundedCornerShape((imageSize / 3).dp),
