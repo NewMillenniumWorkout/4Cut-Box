@@ -1,5 +1,6 @@
 package com.example.a4cut_box.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,13 +36,20 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     ) {
         positions.forEachIndexed { index, position ->
             if (index < list.size) {
+                Log.d("Minsik", "${position.x}, ${position.y}")
                 AsyncImage(
                     model = list[index].imageUrl,
                     contentDescription = "Image $index",
                     modifier = Modifier
                         .offset(position.x.dp, position.y.dp)
                         .clip(RoundedCornerShape((32.dp)))
-                        .size(imageSize.dp)
+                        .size(
+                            if (isCenter(
+                                    position.x,
+                                    position.y
+                                )
+                            ) (imageSize * 1.5f).dp else imageSize.dp
+                        )
                         .padding(4.dp),
                     contentScale = ContentScale.Crop
                 )
@@ -49,6 +57,11 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
         }
     }
 }
+
+fun isCenter(posX: Float, posY: Float): Boolean {
+    return posX >= -1f && posX <= 1f && posY >= -1f && posY <= 1f
+}
+
 
 fun calculateSpiralPositions(totalCount: Int, step: Int): List<Offset> {
     val positions = mutableListOf<Offset>()
