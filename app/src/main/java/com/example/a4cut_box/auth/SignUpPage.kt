@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,9 +26,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.a4cut_box.ui.theme.BoxBlack
+import com.example.a4cut_box.ui.theme.BoxGray
+import com.example.a4cut_box.ui.theme.BoxWhite
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +48,12 @@ fun SignUpPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Sign Up") },
+                title = {
+                    Text(
+                        text = "회원가입",
+                        fontWeight = FontWeight(700)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onClickBack) {
                         Icon(
@@ -64,7 +75,7 @@ fun SignUpPage(
                 modifier = Modifier.fillMaxWidth(),
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("E-Mail") },
+                label = { Text("이메일") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -72,22 +83,38 @@ fun SignUpPage(
                 modifier = Modifier.fillMaxWidth(),
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text("비밀번호") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            TextButton(
-                modifier = Modifier.align(Alignment.End),
-                onClick = onClickBack
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = { registerUser(email, password, onClickBack) },
+                colors = ButtonColors(
+                    containerColor = BoxBlack,
+                    contentColor = BoxWhite,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White
+                )
             ) {
-                Text("Go to login page")
+                Text("회원가입")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                modifier = Modifier.align(Alignment.End),
-                onClick = { registerUser(email, password, onClickBack) }) {
-                Text("Register")
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                onClick = onClickBack,
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = BoxGray,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = BoxGray
+                )
+            ) {
+                Text("로그인 페이지로 가기")
             }
         }
     }
