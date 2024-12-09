@@ -93,7 +93,7 @@ fun SignInPage(
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,10 +110,14 @@ fun SignInPage(
                     disabledContentColor = Color.White
                 )
             ) {
-                Text("로그인")
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    text = "로그인",
+                    fontSize = 18.sp,
+                )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             TextButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,7 +130,10 @@ fun SignInPage(
                     disabledContentColor = BoxGray
                 )
             ) {
-                Text("이메일로 회원가입하기")
+                Text(
+                    text = "이메일로 회원가입하기",
+                    fontSize = 16.sp
+                )
             }
             if (errorMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))

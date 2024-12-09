@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.a4cut_box.ui.theme.BoxBlack
 import com.example.a4cut_box.ui.theme.BoxGray
 import com.example.a4cut_box.ui.theme.BoxWhite
@@ -99,9 +100,13 @@ fun SignUpPage(
                     disabledContentColor = Color.White
                 )
             ) {
-                Text("회원가입")
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    text = "회원가입",
+                    fontSize = 18.sp,
+                )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             TextButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,7 +119,10 @@ fun SignUpPage(
                     disabledContentColor = BoxGray
                 )
             ) {
-                Text("로그인 페이지로 가기")
+                Text(
+                    text = "로그인 페이지로 가기",
+                    fontSize = 16.sp
+                )
             }
         }
     }
