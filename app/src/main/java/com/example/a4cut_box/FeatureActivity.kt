@@ -142,6 +142,9 @@ class FeatureActivity : ComponentActivity() {
                                     onEditClick = {},
                                     onDeleteClick = {
                                         featureViewModel.deleteElement(id)
+                                        navController.navigate("map") {
+                                            popUpTo("map") { inclusive = true }
+                                        }
                                     }
                                 )
                             }

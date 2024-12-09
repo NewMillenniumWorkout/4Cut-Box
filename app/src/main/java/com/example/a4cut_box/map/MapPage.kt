@@ -86,6 +86,7 @@ fun MapPage(
     }
 
     LaunchedEffect(Unit) {
+        featureViewModel.listenForElement()
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
