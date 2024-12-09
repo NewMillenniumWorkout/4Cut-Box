@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.a4cut_box.model.FeatureViewModel
@@ -30,7 +32,7 @@ import com.example.a4cut_box.model.FeatureViewModel
 fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     val list by featureViewModel.elements.collectAsState()
     val baseImageSize = 96f
-    val step = baseImageSize.toInt() * 1.5f
+    val step = baseImageSize.toInt() * 1.2f
     val positions = calculateSpiralPositions(list.size, step)
 
     var screenCenter by remember { mutableStateOf(Offset.Zero) }
@@ -39,12 +41,26 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
+            .background(Color.White)
             .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    dragOffset -= dragAmount
-                }
+                detectDragGestures(
+                    onDragEnd = {
+                        val closestPosition = positions.minByOrNull { position ->
+                            val absolutePosition = Offset(
+                                screenCenter.x + (position - dragOffset).x,
+                                screenCenter.y + (position - dragOffset).y
+                            )
+                            absolutePosition.getDistanceTo(screenCenter)
+                        }
+                        closestPosition?.let {
+                            dragOffset = it
+                        }
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        dragOffset -= dragAmount
+                    }
+                )
             }
             .onGloballyPositioned { layoutCoordinates ->
                 val size = layoutCoordinates.size
@@ -62,14 +78,18 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
             val distanceFromCenter = absolutePosition.getDistanceTo(screenCenter) / step
             val scaleFactor = (1.5f - distanceFromCenter * 0.3f).coerceIn(0.5f, 1.5f)
             val imageSize = baseImageSize * scaleFactor
+            val zIndexValue = 1f / (distanceFromCenter + 1)
 
-            Box(
+            Surface(
                 modifier = Modifier
                     .size(imageSize.dp)
                     .offset(
                         x = relativePosition.x.dp,
                         y = relativePosition.y.dp
                     )
+                    .zIndex(zIndexValue),
+                shape = RoundedCornerShape((imageSize / 3).dp),
+                shadowElevation = if (distanceFromCenter < 0.1f) 32.dp else 0.dp
             ) {
                 if (index < list.size) {
                     AsyncImage(
