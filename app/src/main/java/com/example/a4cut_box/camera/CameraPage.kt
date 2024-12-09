@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -111,17 +110,36 @@ suspend fun expandUrl(shortUrl: String): String = withContext(Dispatchers.IO) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun photoGray(qr: String): String {
-    val idParam = qr.substringAfter("id=", "").substringBefore("&")
-    val decodedString = String(Base64.getDecoder().decode(idParam))
+    // id= 파라미터 추출
+    val idParam = qr.substringAfter("id=", "")
+    if (idParam.isEmpty()) {
+        Log.d("QR", "photoGray: No id param found in URL: $qr")
+        return ""
+    }
 
-    var sessionId = decodedString.split("&").find { it.startsWith("sessionId=") }
-        ?.substringAfter("sessionId=")
-    if (sessionId == null)
-        sessionId = ""
-    val result = "https://pg-qr-resource.aprd.io/${sessionId}/image.jpg"
-    Log.d("QR", "result=$result")
-    return result
+    return try {
+        // Base64 디코딩
+        val decodedString = String(Base64.getDecoder().decode(idParam))
+        Log.d("QR", "photoGray decodedString=$decodedString")
+
+        // sessionId 추출
+        val sessionId = decodedString.split("&").find { it.startsWith("sessionId=") }
+            ?.substringAfter("sessionId=")
+
+        if (sessionId.isNullOrEmpty()) {
+            Log.d("QR", "photoGray: sessionId not found in decodedString")
+            return ""
+        }
+
+        val result = "https://pg-qr-resource.aprd.io/$sessionId/image.jpg"
+        Log.d("QR", "photoGray result=$result")
+        result
+    } catch (e: Exception) {
+        e.printStackTrace()
+        ""
+    }
 }
+
 
 fun photoism(uid: String, callback: (String?) -> Unit) {
     val client = OkHttpClient()
@@ -194,14 +212,12 @@ fun CameraPage(modifier: Modifier = Modifier, goToCameraSavePage: (image: String
         }
 
     var qrCode by remember { mutableStateOf("") }
-    var finalUrl by remember { mutableStateOf<String?>(null) } // photoism의 결과를 저장할 상태 값
-
-    val coroutineScope = rememberCoroutineScope()
+    var finalUrl by remember { mutableStateOf<String?>(null) } // photoism 결과를 위한 상태
 
     Box(modifier = Modifier.fillMaxSize()) {
         CameraScreen { scannedCode -> qrCode = scannedCode }
         Image(
-            painter = painterResource(id = R.drawable.qr_square), "qr",
+            painter = painterResource(id = R.drawable.qr_square), contentDescription = "qr",
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(250.dp)
@@ -222,9 +238,7 @@ fun CameraPage(modifier: Modifier = Modifier, goToCameraSavePage: (image: String
 
         if (qrCode.isEmpty()) {
             ElevatedButton(
-                onClick = {
-                    launcher.launch("image/*")
-                },
+                onClick = { launcher.launch("image/*") },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(vertical = 32.dp)
@@ -235,33 +249,39 @@ fun CameraPage(modifier: Modifier = Modifier, goToCameraSavePage: (image: String
             Log.d("QR", "qr origin: $qrCode")
             LaunchedEffect(qrCode) {
                 if (qrCode.startsWith("https://pgshort.aprd.io")) {
-                    // pgshort
-                    val expanded = expandUrl(qrCode)
-                    val localUri = downloadImage(context, expanded)
-                    Log.d("QR", localUri.toString())
-                    localUri?.toString()?.let { goToCameraSavePage(photoGray(it)) }
+                    val expanded = expandUrl(qrCode) // 여기서 이미 photogray-download 형태의 URL 획득
+                    // photoGray에는 expanded URL을 전달
+                    val grayUrl = photoGray(expanded)
+                    if (grayUrl.isNotEmpty()) {
+                        val grayUri = downloadImage(context, grayUrl)
+                        Log.d("QR", "photoGray finalUri: $grayUri")
+                        grayUri?.toString()?.let { goToCameraSavePage(it) }
+                    } else {
+                        // sessionId를 찾지 못한 경우 처리 로직
+                        Log.d("QR", "photoGray failed to get a valid URL")
+                    }
                 } else if (qrCode.startsWith("https://qr.seobuk.kr")) {
-                    // seobuk
+                    // seobuk일 경우
                     val expanded = expandUrl(qrCode)
                     Log.d("QR", "pi exp: $expanded")
                     photoism(expanded.substringAfter("u=")) { result ->
-                        finalUrl = result // 콜백 결과를 State로 저장
+                        finalUrl = result
                     }
                 }
             }
         }
     }
 
-    // finalUrl이 변경될 때마다 실행
+    // finalUrl(phothoism 결과)이 변경될 때마다 실행
     LaunchedEffect(finalUrl) {
         finalUrl?.let { url ->
+            val context = context
             val uri = downloadImage(context, url)
             Log.d("QR", "pi exp2: $uri")
             uri?.toString()?.let { goToCameraSavePage(it) }
         }
     }
 }
-
 
 @Composable
 fun StatusBox(
