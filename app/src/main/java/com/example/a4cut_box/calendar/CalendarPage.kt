@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -249,6 +250,7 @@ fun CalendarPage(navController: NavController, featureViewModel: FeatureViewMode
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(48.dp))
+                                .border(2.dp, Color.White, RoundedCornerShape(48.dp))
                                 .clickable { navController.navigate("photoDetail/${element.id}") }
                         ) {
                             AsyncImage(
