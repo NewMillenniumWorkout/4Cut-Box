@@ -96,4 +96,5 @@ dependencies {
     implementation("com.kakao.maps.open:android:2.12.8")
     implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }
