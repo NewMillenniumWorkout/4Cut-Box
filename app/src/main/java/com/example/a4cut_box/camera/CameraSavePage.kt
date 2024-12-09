@@ -269,7 +269,7 @@ fun CameraSavePage(
                         value = tagInput,
                         onValueChange = { tagInput = it.filterNot { char -> char.isWhitespace() } },
                         placeholder = {
-                            Text(text = "테그를 입력하세요.")
+                            Text(text = "태그를 입력하세요.")
                         },
                         modifier = Modifier
                             .weight(1f)
