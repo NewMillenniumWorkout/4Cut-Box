@@ -33,7 +33,7 @@ import kotlin.math.sign
 @Composable
 fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     val list by featureViewModel.elements.collectAsState()
-    val shuffledList = remember(list) { list.shuffled() }
+    val shuffledList = remember(list) { List(10) { list }.flatten().shuffled() }
     val baseImageSize = 96f
     val step = baseImageSize.toInt() * 1.2f
     val positions = calculateSpiralPositions(shuffledList.size, step)
