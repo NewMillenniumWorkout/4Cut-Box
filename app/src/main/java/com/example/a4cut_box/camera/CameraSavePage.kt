@@ -222,7 +222,7 @@ fun CameraSavePage(
                 ) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "메모",
+                        text = "제목",
                         style = TextStyle(
                             fontSize = 20.sp,
                         )
@@ -236,7 +236,7 @@ fun CameraSavePage(
                         .fillMaxWidth()
                         .requiredHeightIn(min = 120.dp, max = 200.dp),
                     placeholder = {
-                        Text(text = "메모를 입력하세요.")
+                        Text(text = "제목을 입력하세요.")
                     },
                     maxLines = 5,
                     singleLine = false,

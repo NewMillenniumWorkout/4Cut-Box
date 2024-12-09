@@ -106,4 +106,45 @@ class FeatureViewModel : ViewModel() {
     fun getElementById(id: String): Element? {
         return elements.value.find { it.id == id }
     }
+
+    fun deleteElement(id: String) {
+        val uid = firebaseAuth.currentUser?.uid ?: ""
+        if (uid.isEmpty()) {
+            Log.e("FeatureViewModel", "User is not authenticated")
+            return
+        }
+
+        // `element` 경로에서 UID 아래의 모든 데이터를 탐색
+        val userElementsRef = firebaseDatabase.reference.child("element").child(uid)
+
+        userElementsRef.orderByChild("id").equalTo(id)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        snapshot.children.forEach { childSnapshot ->
+                            childSnapshot.ref.removeValue().addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Log.d(
+                                        "FeatureViewModel",
+                                        "Element with id $id successfully deleted"
+                                    )
+                                } else {
+                                    Log.e(
+                                        "FeatureViewModel",
+                                        "Failed to delete element: ${task.exception}"
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Log.e("FeatureViewModel", "No element found with id $id")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FeatureViewModel", "Failed to delete element: ${error.message}")
+                }
+            })
+    }
+
 }
