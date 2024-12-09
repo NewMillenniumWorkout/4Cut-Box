@@ -120,10 +120,16 @@ class FeatureActivity : ComponentActivity() {
                         startDestination = "Home"
                     ) {
                         composable("Home") {
-                            HomePage()
+                            HomePage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable("calendar") {
-                            CalendarPage()
+                            CalendarPage(
+                                navController = navController,
+                                featureViewModel = featureViewModel
+                            )
                         }
                         composable(
                             "photoDetail/{id}",
