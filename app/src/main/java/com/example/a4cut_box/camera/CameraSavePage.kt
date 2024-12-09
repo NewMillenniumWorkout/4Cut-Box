@@ -68,6 +68,8 @@ import com.example.a4cut_box.ui.theme.BoxBlack
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 fun getRoadAddress(context: Context, latitude: Double, longitude: Double): String {
@@ -152,6 +154,7 @@ fun CameraSavePage(
             }
         }
     } else {
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -164,7 +167,7 @@ fun CameraSavePage(
                     ),
                     title = {
                         Text(
-                            "2024.10.27",
+                            currentDate,
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
