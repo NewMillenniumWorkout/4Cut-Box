@@ -17,12 +17,12 @@ import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraScreen() {
+fun CameraScreen(onQrCodeScanned: (String) -> Unit) {
     val cameraPermission = android.Manifest.permission.CAMERA
     val permissionState = rememberPermissionState(cameraPermission)
 
     if (permissionState.status.isGranted) {
-        CameraPreview()
+        CameraPreview(onQrCodeScanned = onQrCodeScanned)
     } else {
         Column(
             modifier = Modifier.fillMaxSize(),
