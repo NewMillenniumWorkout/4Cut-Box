@@ -37,7 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -67,7 +69,7 @@ fun PhotoDetailPage(
                 title = {
                     Text(
                         text = formatTimestamp(element.createdAt),
-                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight(700)
                     )
                 },
                 navigationIcon = {
@@ -84,7 +86,7 @@ fun PhotoDetailPage(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(horizontal = 16.dp)
 
             )
         },
@@ -100,12 +102,13 @@ fun PhotoDetailPage(
                         modifier = Modifier
 //                            .wrapContentSize(Alignment.TopStart)
                             .fillMaxWidth()
-                            .padding(horizontal = 48.dp)
+                            .padding(start = 48.dp, end = 48.dp, top = 8.dp)
                     ) {
                         AsyncImage(
                             model = element.imageUrl, // Element의 이미지 URL
                             contentDescription = "Photo",
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            contentScale = ContentScale.FillWidth
                         )
                     }
                 }
