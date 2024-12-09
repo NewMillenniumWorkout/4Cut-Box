@@ -140,7 +140,9 @@ class FeatureActivity : ComponentActivity() {
                                     navController = navController,
                                     element = element,
                                     onEditClick = {},
-                                    onDeleteClick = {}
+                                    onDeleteClick = {
+                                        featureViewModel.deleteElement(id)
+                                    }
                                 )
                             }
                         }
