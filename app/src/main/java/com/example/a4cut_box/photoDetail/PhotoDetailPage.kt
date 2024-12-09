@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
@@ -144,22 +143,6 @@ fun PhotoDetailPage(
                                         .background(Color.White),
                                     offset = DpOffset(x = 0.dp, y = 0.dp)
                                 ) {
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text("수정하기", color = Color.Black)
-                                        },
-                                        onClick = {
-                                            expanded = false
-                                            onEditClick() // 수정하기 클릭 이벤트
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                Icons.Default.Edit,
-                                                contentDescription = "Edit",
-                                                tint = Color.Gray
-                                            )
-                                        }
-                                    )
                                     DropdownMenuItem(
                                         text = {
                                             Text("삭제하기", color = Color.Red)
