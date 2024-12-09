@@ -27,6 +27,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.a4cut_box.model.FeatureViewModel
+import com.example.a4cut_box.ui.theme.BoxWhite
 
 @Composable
 fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
@@ -41,7 +42,7 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(BoxWhite)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
@@ -76,7 +77,7 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
             )
 
             val distanceFromCenter = absolutePosition.getDistanceTo(screenCenter) / step
-            val scaleFactor = (1.5f - distanceFromCenter * 0.3f).coerceIn(0.5f, 1.5f)
+            val scaleFactor = (1.5f - distanceFromCenter * 0.4f).coerceIn(0.5f, 1.5f)
             val imageSize = baseImageSize * scaleFactor
             val zIndexValue = 1f / (distanceFromCenter + 1)
 
