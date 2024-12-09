@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -205,7 +206,7 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(36.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(elements) { element ->
@@ -214,6 +215,7 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
                         contentDescription = "Element Image",
                         modifier = Modifier
                             .size(100.dp)
+                            .aspectRatio(1f)
                             .clip(RoundedCornerShape(48.dp))
                             .border(2.dp, Color.White, RoundedCornerShape(48.dp))
                             .clickable {
