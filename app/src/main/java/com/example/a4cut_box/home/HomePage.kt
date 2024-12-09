@@ -1,6 +1,7 @@
 package com.example.a4cut_box.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -97,7 +98,10 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                             relativePosition.y.dp
                         }
                     )
-                    .zIndex(zIndexValue),
+                    .zIndex(zIndexValue)
+                    .clickable {
+                        navController.navigate("photoDetail/${list[index].id}")
+                    },
                 shape = RoundedCornerShape((imageSize / 3).dp),
                 shadowElevation = if (distanceFromCenter < 0.1f) 32.dp else 0.dp
             ) {
