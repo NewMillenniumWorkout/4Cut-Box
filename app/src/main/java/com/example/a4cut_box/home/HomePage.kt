@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -102,7 +101,7 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                     .clickable {
                         navController.navigate("photoDetail/${list[index].id}")
                     },
-                shape = RoundedCornerShape((imageSize / 3).dp),
+                shape = RoundedCornerShape(((distanceFromCenter * 3) + (imageSize / 3)).dp),
                 shadowElevation = if (distanceFromCenter < 0.1f) 32.dp else 0.dp
             ) {
                 if (index < list.size) {
@@ -111,7 +110,6 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                         contentDescription = "Image $index",
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape((imageSize / 3).dp))
                             .background(Color.LightGray),
                         contentScale = ContentScale.Crop
                     )
