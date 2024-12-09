@@ -33,10 +33,10 @@ import kotlin.math.sign
 @Composable
 fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
     val list by featureViewModel.elements.collectAsState()
+    val shuffledList = remember(list) { list.shuffled() }
     val baseImageSize = 96f
     val step = baseImageSize.toInt() * 1.2f
-    val positions = calculateSpiralPositions(list.size, step)
-
+    val positions = calculateSpiralPositions(shuffledList.size, step)
     var screenCenter by remember { mutableStateOf(Offset.Zero) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
 
@@ -60,7 +60,7 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                     },
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        dragOffset -= dragAmount
+                        dragOffset -= dragAmount * 0.5f
                     }
                 )
             }
@@ -99,14 +99,14 @@ fun HomePage(navController: NavController, featureViewModel: FeatureViewModel) {
                     )
                     .zIndex(zIndexValue)
                     .clickable {
-                        navController.navigate("photoDetail/${list[index].id}")
+                        navController.navigate("photoDetail/${shuffledList[index].id}")
                     },
                 shape = RoundedCornerShape(((distanceFromCenter * 3) + (imageSize / 3)).dp),
                 shadowElevation = if (distanceFromCenter < 0.1f) 32.dp else 0.dp
             ) {
-                if (index < list.size) {
+                if (index < shuffledList.size) {
                     AsyncImage(
-                        model = list[index].imageUrl,
+                        model = shuffledList[index].imageUrl,
                         contentDescription = "Image $index",
                         modifier = Modifier
                             .fillMaxSize()
