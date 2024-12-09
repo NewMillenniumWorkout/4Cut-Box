@@ -10,10 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -198,11 +197,10 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
     Dialog(onDismissRequest = { onDismiss() }) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = BoxBlack)
-                .padding(8.dp)
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.6f)
+                .wrapContentSize()
+                .clip(RoundedCornerShape(64.dp))
+                .background(BoxBlack)
+                .padding(16.dp)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -216,8 +214,8 @@ fun BubbleDialog(navController: NavController, elements: List<Element>, onDismis
                         contentDescription = "Element Image",
                         modifier = Modifier
                             .size(100.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .border(2.dp, Color.White, RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(48.dp))
+                            .border(2.dp, Color.White, RoundedCornerShape(48.dp))
                             .clickable {
                                 navController.navigate("photoDetail/${element.id}")
                             },
